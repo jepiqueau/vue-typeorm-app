@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'com.jeep.app.vue.typeorm.sqlite',
   appName: 'vue-typeorm-app',
   webDir: 'dist',
   bundledWebRuntime: false
