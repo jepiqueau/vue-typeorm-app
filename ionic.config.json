@@ -1,0 +1,7 @@
+{
+  "name": "vue-typeorm-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
