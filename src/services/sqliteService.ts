@@ -1,7 +1,8 @@
 import { ref } from "vue";
 // PLUGIN IMPORTS
 import { CapacitorSQLite, SQLiteConnection } from '@capacitor-community/sqlite';
-import { Connection, createConnection } from 'typeorm';
+import { Connection, createConnection, Repository, getRepository } from 'typeorm';
+import { User } from '@/entity/user';
 
 export default class SQLiteService {
     database = ref<any>(null);
@@ -105,7 +106,7 @@ export default class SQLiteService {
     /**
      * Create a TypeOrm connection
      */
-    createTypeOrmConnection = async(): Promise<Connection> => {
+    createTypeOrmConnection = async(): Promise<void> => {
       console.log("$$$ in createTypeOrmConnection ... $$$")
       try {
         const res = await this.sqlite.isConnection('ionic-vue-db'); 
@@ -113,13 +114,31 @@ export default class SQLiteService {
           await this.sqlite.closeConnection('ionic-vue-db');
           console.log("$$$ in createTypeOrmConnection close connection... $$$")
         }
-        const typeOrmConnection = await createConnection({
+        createConnection({
           type: 'capacitor',
           driver: this.sqlite, 
-          database: 'ionic-vue-db'
+          database: 'ionic-vue-db',
+          entities: [User],
+          logging: true,
+          synchronize: true
+        }).then( async (connection) => {
+            console.log(`$$$ typeOrmConnection: ${JSON.stringify(connection)}`);
+            const user = new User();
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            user.first_name = "Williams";
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            user.last_name = "Clinton";
+            user.email = "bill.clinton@example.com";
+            console.log(`>>> User : ${user}`);
+            const userRepository = getRepository('User') as Repository<User>;
+            await userRepository.save(user);
+            const saveUser  = await userRepository.findOne(user.id); 
+            console.log(`>>> saveUser ${saveUser}`);         
+            return Promise.resolve();
+        }).catch(error => {
+          console.log("Error: ", error);
+          return Promise.reject(`Error: createTypeOrmConnection ${error}`);
         });
-        console.log(`$$$ typeOrmConnection: ${JSON.stringify(typeOrmConnection)}`);
-        return Promise.resolve(typeOrmConnection);
       } catch (err) {
         return Promise.reject(`Error: createTypeOrmConnection ${err}`);
       }

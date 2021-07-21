@@ -24,30 +24,54 @@
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
 import { useState } from '@/composables/state';
-import SQLiteService  from '@/services/sqliteService';
-import { Connection } from 'typeorm';
+//import SQLiteService  from '@/services/sqliteService';
+import { Repository, getRepository } from 'typeorm';
 import { User } from '@/entity/user';
+//import { CapacitorSQLite, SQLiteConnection } from '@capacitor-community/sqlite';
 
 export default defineComponent({
     name: 'SQLiteServiceTest',
     setup() {
         const [log, setLog] = useState("");
-        const sqliteService: SQLiteService  = new SQLiteService();
+//        const sqliteService: SQLiteService  = new SQLiteService();
         const [users, setUsers] = useState([]);
         let errMess = "";
+
         onMounted(async () => {
             try {
+                const user = new User();
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                user.first_name = "Williams";
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                user.last_name = "Clinton";
+                user.email = "bill.clinton@example.com";
+                console.log(`>>> User : ${JSON.stringify(user)}`);
+                const userRepository = getRepository('user') as Repository<User>;
+                await userRepository.save(user);
+                const saveUser  = await userRepository.findOne(user.id); 
+                console.log(`>>> saveUser ${JSON.stringify(saveUser)}`); 
+                setUsers([...users.value, saveUser]);        
+                setLog(log.value
+                    .concat("\n* The set of tests was successfull *\n"));
+ 
+            } catch (err) {
+                errMess = err;
+                setLog(log.value
+                        .concat("\n* The set of tests failed *\n"));
+            }
+            /*
+            try {
                 // Standard sqlite start up without the use of the hook
-                await sqliteService.databaseStartup();
+/*                await sqliteService.databaseStartup();
                 console.log(`users from sqlite: ${JSON.stringify(sqliteService.users.value)}`);
                 setUsers(sqliteService.users.value);
-                
+*/                
                 // *******************************************
                 // TypeOrm Connection definition
-                const typeOrmConn: Connection = await sqliteService.createTypeOrmConnection();
+//                await sqliteService.createTypeOrmConnection();
 
                 // define a new user with typeOrmConn
-                const user = new User();
+/*                const user = new User();
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 user.first_name = "Williams";
                 // eslint-disable-next-line @typescript-eslint/camelcase
@@ -59,7 +83,9 @@ export default defineComponent({
 
                 // get users from typeOrmConn
                 setUsers(await typeOrmConn.manager.find(User));
+*/
                 // ************************************************
+/*
                 setLog(log.value
                         .concat("\n* The set of tests was successfull *\n"));
             } catch (err) {
@@ -67,6 +93,7 @@ export default defineComponent({
                 setLog(log.value
                         .concat("\n* The set of tests failed *\n"));
             }
+*/           
         });
         return { log, errMess, users };
     },

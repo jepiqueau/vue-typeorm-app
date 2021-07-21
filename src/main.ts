@@ -23,12 +23,34 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+import { createConnection } from 'typeorm';
+import { User } from '@/entity/user';
+import { CapacitorSQLite, SQLiteConnection } from '@capacitor-community/sqlite';
+
+
 
 const app = createApp(App)
   .use(IonicVue)
   .use(router);
 
+const sqliteConnection =  new SQLiteConnection(CapacitorSQLite);
+
+const typeOrmConnection = async () => {
+  await createConnection({
+      type: 'capacitor',
+      driver: sqliteConnection, 
+      database: 'ionic-vue-db',
+      entities: [User],
+      logging: ['error', 'query', 'schema'],
+      synchronize: true
+  });
+}
+  
+// Share SQLite connection
+app.config.globalProperties.$sqliteConnection = sqliteConnection;
   
 router.isReady().then(() => {
-  app.mount('#app');
+  typeOrmConnection().then(() => {
+    app.mount("#app");
+  });
 });
