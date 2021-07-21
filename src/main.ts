@@ -23,7 +23,7 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
-import {createConnection} from 'typeorm';
+import {createConnection, Connection} from 'typeorm';
 import {User} from '@/entity/user';
 import {CapacitorSQLite, SQLiteConnection} from '@capacitor-community/sqlite';
 import {AddItemTable1626863626662} from "@/migration/1626863626662-AddItemTable";
@@ -37,15 +37,44 @@ const app = createApp(App)
 const sqliteConnection = new SQLiteConnection(CapacitorSQLite);
 
 const typeOrmConnection = async () => {
-	await createConnection({
+	const firstConn = await createConnection({
 		type: 'capacitor',
 		driver: sqliteConnection,
-		database: 'ionic-vue-db-items',
-		entities: [User, Item],
-		migrations: [AddItemTable1626863626662],
+		database: 'ionic-vue-db',
+		logging: ['error', 'query', 'schema'],
+		synchronize: true,
+    entities: [User],
+	});
+
+  firstConn.close();
+  let isConn = await sqliteConnection.isConnection('ionic-vue-db');
+  console.log(`$$$ isConnection ${isConn.result}`);
+  if(isConn.result) {
+    await sqliteConnection.closeConnection('ionic-vue-db');
+  }
+
+	const migration = await createConnection({
+		type: 'capacitor',
+		driver: sqliteConnection,
+		database: 'ionic-vue-db',
 		logging: ['error', 'query', 'schema'],
 		synchronize: false,
+		migrations: [AddItemTable1626863626662],
+    entities: [Item],
 		migrationsRun: true
+	});
+  migration.close();
+  isConn = await sqliteConnection.isConnection('ionic-vue-db');
+  if(isConn.result) {
+    await sqliteConnection.closeConnection('ionic-vue-db');
+  }
+  await createConnection({
+		type: 'capacitor',
+		driver: sqliteConnection,
+		database: 'ionic-vue-db',
+		logging: ['error', 'query', 'schema'],
+		synchronize: false,
+    entities: [User, Item],
 	});
 }
 

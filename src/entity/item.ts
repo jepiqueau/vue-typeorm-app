@@ -5,9 +5,9 @@ export class Item {
 	@PrimaryGeneratedColumn()
 	id = 0;
 
-	@Column()
+	@Column({nullable: false})
 	name!: string;
 
-	@Column()
+	@Column({nullable: false})
 	phoneNumber!: number;
 }

@@ -39,14 +39,22 @@ export default defineComponent({
 
         onMounted(async () => {
             try {
+                const userRepository = getRepository('user') as Repository<User>;
+                const previousUsers  = await userRepository.find();
+                setUsers([...users.value, previousUsers]);
                 const user = new User();
                 // eslint-disable-next-line @typescript-eslint/camelcase
-                user.first_name = "Williams";
+/*                user.first_name = "Williams";
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 user.last_name = "Clinton";
                 user.email = "bill.clinton@example.com";
+*/
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                user.first_name = "John";
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                user.last_name = "Duree";
+                user.email = "john.duree@example.com";
                 console.log(`>>> User : ${JSON.stringify(user)}`);
-                const userRepository = getRepository('user') as Repository<User>;
                 await userRepository.save(user);
                 const saveUser  = await userRepository.findOne(user);
                 console.log(`>>> saveUser ${JSON.stringify(saveUser)}`);
