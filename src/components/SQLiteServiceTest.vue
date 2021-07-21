@@ -48,12 +48,12 @@ export default defineComponent({
                 console.log(`>>> User : ${JSON.stringify(user)}`);
                 const userRepository = getRepository('user') as Repository<User>;
                 await userRepository.save(user);
-                const saveUser  = await userRepository.findOne(user.id); 
-                console.log(`>>> saveUser ${JSON.stringify(saveUser)}`); 
-                setUsers([...users.value, saveUser]);        
+                const saveUser  = await userRepository.findOne(user);
+                console.log(`>>> saveUser ${JSON.stringify(saveUser)}`);
+                setUsers([...users.value, saveUser]);
                 setLog(log.value
                     .concat("\n* The set of tests was successfull *\n"));
- 
+
             } catch (err) {
                 errMess = err;
                 setLog(log.value
@@ -65,7 +65,7 @@ export default defineComponent({
 /*                await sqliteService.databaseStartup();
                 console.log(`users from sqlite: ${JSON.stringify(sqliteService.users.value)}`);
                 setUsers(sqliteService.users.value);
-*/                
+*/
                 // *******************************************
                 // TypeOrm Connection definition
 //                await sqliteService.createTypeOrmConnection();
@@ -93,7 +93,7 @@ export default defineComponent({
                 setLog(log.value
                         .concat("\n* The set of tests failed *\n"));
             }
-*/           
+*/
         });
         return { log, errMess, users };
     },
@@ -101,7 +101,7 @@ export default defineComponent({
 </script>
 <style scoped>
 #message-container {
-  text-align: center;  
+  text-align: center;
   position: absolute;
   left: 0;
   right: 0;
