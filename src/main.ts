@@ -1,8 +1,8 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
 import router from './router';
 
-import { IonicVue } from '@ionic/vue';
+import {IonicVue, isPlatform} from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -23,34 +23,41 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
-import { createConnection } from 'typeorm';
-import { User } from '@/entity/user';
-import { CapacitorSQLite, SQLiteConnection } from '@capacitor-community/sqlite';
-
-
+import {createConnection} from 'typeorm';
+import {CapacitorSQLite, SQLiteConnection} from '@capacitor-community/sqlite';
+import {Item} from "@/entity/item";
+import {AddItemTable1626863626662} from "@/migration/1626863626662-AddItemTable";
 
 const app = createApp(App)
-  .use(IonicVue)
-  .use(router);
+	.use(IonicVue)
+	.use(router);
 
-const sqliteConnection =  new SQLiteConnection(CapacitorSQLite);
+if (isPlatform('capacitor')) {
+	const sqliteConnection = new SQLiteConnection(CapacitorSQLite);
 
-const typeOrmConnection = async () => {
-  await createConnection({
-      type: 'capacitor',
-      driver: sqliteConnection, 
-      database: 'ionic-vue-db',
-      entities: [User],
-      logging: ['error', 'query', 'schema'],
-      synchronize: true
-  });
+	createConnection({
+		type: 'capacitor',
+		driver: sqliteConnection,
+		database: 'ionic-vue',
+		entities: [Item],
+		migrations: [AddItemTable1626863626662],
+		logging: ['error', 'query', 'schema'],
+		synchronize: false,
+		migrationsRun: false,
+	}).then(async connection => {
+		try {
+			// run all migrations
+			await connection.runMigrations();
+		} catch (e) {
+			console.log(e.message);
+		}
+
+		router.isReady().then(() => {
+			app.mount("#app");
+		});
+	})
+} else {
+	router.isReady().then(() => {
+		app.mount("#app");
+	});
 }
-  
-// Share SQLite connection
-app.config.globalProperties.$sqliteConnection = sqliteConnection;
-  
-router.isReady().then(() => {
-  typeOrmConnection().then(() => {
-    app.mount("#app");
-  });
-});
