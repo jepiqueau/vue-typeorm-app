@@ -1,38 +1,21 @@
-import {MigrationInterface, QueryRunner/*, Table*/} from "typeorm";
+import {MigrationInterface, QueryRunner} from "typeorm";
 
 export class AddItemTable1626863626662 implements MigrationInterface {
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-/*        await queryRunner.createTable(new Table({
-            name: "item",
-            columns: [
-                {
-                    name: "id",
-                    type: "integer",
-                    isPrimary: true,
-                },
-                {
-                    name: "name",
-                    type: "varchar",
-                },
-                {
-                    name: "phoneNumber",
-                    type: "integer",
-                },
-            ]
-        }), true)
-*/
+	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(`
-            CREATE TABLE IF NOT EXISTS item (
-                id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-                name VARCHAR NOT NULL,
-                phoneNumber INTEGER NOT NULL
-            );
+            CREATE TABLE "item" (
+                "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "name" varchar NOT NULL,
+                "phoneNumber" integer NOT NULL
+            )
         `);
-    }
+	}
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-		await queryRunner.query("DROP TABLE item;");
-    }
+	public async down(queryRunner: QueryRunner): Promise<void> {
+		await queryRunner.query(`
+            DROP TABLE "item"
+        `);
+	}
 
 }

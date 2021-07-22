@@ -2,7 +2,7 @@ import {createApp} from 'vue'
 import App from './App.vue'
 import router from './router';
 
-import {IonicVue} from '@ionic/vue';
+import {IonicVue, isPlatform} from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -23,66 +23,41 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
-import {createConnection, Connection} from 'typeorm';
-import {User} from '@/entity/user';
+import {createConnection} from 'typeorm';
 import {CapacitorSQLite, SQLiteConnection} from '@capacitor-community/sqlite';
-import {AddItemTable1626863626662} from "@/migration/1626863626662-AddItemTable";
 import {Item} from "@/entity/item";
-
+import {AddItemTable1626863626662} from "@/migration/1626863626662-AddItemTable";
 
 const app = createApp(App)
 	.use(IonicVue)
 	.use(router);
 
-const sqliteConnection = new SQLiteConnection(CapacitorSQLite);
+if (isPlatform('capacitor')) {
+	const sqliteConnection = new SQLiteConnection(CapacitorSQLite);
 
-const typeOrmConnection = async () => {
-	const firstConn = await createConnection({
+	createConnection({
 		type: 'capacitor',
 		driver: sqliteConnection,
-		database: 'ionic-vue-db',
-		logging: ['error', 'query', 'schema'],
-		synchronize: true,
-    entities: [User],
-	});
-
-  firstConn.close();
-  let isConn = await sqliteConnection.isConnection('ionic-vue-db');
-  console.log(`$$$ isConnection ${isConn.result}`);
-  if(isConn.result) {
-    await sqliteConnection.closeConnection('ionic-vue-db');
-  }
-
-	const migration = await createConnection({
-		type: 'capacitor',
-		driver: sqliteConnection,
-		database: 'ionic-vue-db',
-		logging: ['error', 'query', 'schema'],
-		synchronize: false,
+		database: 'ionic-vue',
+		entities: [Item],
 		migrations: [AddItemTable1626863626662],
-    entities: [Item],
-		migrationsRun: true
-	});
-  migration.close();
-  isConn = await sqliteConnection.isConnection('ionic-vue-db');
-  if(isConn.result) {
-    await sqliteConnection.closeConnection('ionic-vue-db');
-  }
-  await createConnection({
-		type: 'capacitor',
-		driver: sqliteConnection,
-		database: 'ionic-vue-db',
 		logging: ['error', 'query', 'schema'],
 		synchronize: false,
-    entities: [User, Item],
-	});
-}
+		migrationsRun: false,
+	}).then(async connection => {
+		try {
+			// run all migrations
+			await connection.runMigrations();
+		} catch (e) {
+			console.log(e.message);
+		}
 
-// Share SQLite connection
-app.config.globalProperties.$sqliteConnection = sqliteConnection;
-
-router.isReady().then(() => {
-	typeOrmConnection().then(() => {
+		router.isReady().then(() => {
+			app.mount("#app");
+		});
+	})
+} else {
+	router.isReady().then(() => {
 		app.mount("#app");
 	});
-});
+}
