@@ -26,8 +26,9 @@ import './theme/variables.css';
 import {createConnection} from 'typeorm';
 import {CapacitorSQLite, SQLiteConnection} from '@capacitor-community/sqlite';
 import {Item} from "@/entity/item";
+import {User} from "@/entity/user";
 import {AddItemTable1626863626662} from "@/migration/1626863626662-AddItemTable";
-
+import {AddUserTable1626944570684} from "@/migration/1626944570684-AddUserTable";
 const app = createApp(App)
 	.use(IonicVue)
 	.use(router);
@@ -39,10 +40,10 @@ if (isPlatform('capacitor')) {
 		type: 'capacitor',
 		driver: sqliteConnection,
 		database: 'ionic-vue',
-		entities: [Item],
-		migrations: [AddItemTable1626863626662],
+		entities: [Item, User],
+		migrations: [AddItemTable1626863626662, AddUserTable1626944570684],
 		logging: ['error', 'query', 'schema'],
-		synchronize: false,
+		synchronize: true,
 		migrationsRun: false,
 	}).then(async connection => {
 		try {
@@ -51,7 +52,6 @@ if (isPlatform('capacitor')) {
 		} catch (e) {
 			console.log(e.message);
 		}
-
 		router.isReady().then(() => {
 			app.mount("#app");
 		});
