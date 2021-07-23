@@ -43,7 +43,7 @@ if (isPlatform('capacitor')) {
 		entities: [Item, User],
 		migrations: [AddItemTable1626863626662, AddUserTable1626944570684],
 		logging: ['error', 'query', 'schema'],
-		synchronize: true,
+		synchronize: false,
 		migrationsRun: false,
 	}).then(async connection => {
 		try {

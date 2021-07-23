@@ -2,7 +2,8 @@
 
 this is an application to test Ionic/Vue with the TypeORM driver for `@capacitor-community-sqlite` 
 
-In this application with use `typeOrm migrations` to build the database.
+In this application with use `typeOrm migrations` to build the database instead of using a the `synchronize: true` option when creating the connection.
+
 To have `typeOrm migrations` working you must add in or create a `vue.config.js` the following
 
 ```js
