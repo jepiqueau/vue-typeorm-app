@@ -32,7 +32,12 @@
 			<h2>Users</h2>
 			<ul>
 				<li v-for="user in users" :key="user.id">
-					{{user.firstName}} {{user.lastName}} {{ item.name }} {{ item.phoneNumber }}
+					{{user.firstName}} {{user.lastName}} 
+					<ul>
+						<li v-for="item in user.items" :key="item.id">
+							{{ item.name }} {{ item.phoneNumber }}
+						</li>
+					</ul>
 				</li>
 			</ul>
 		</div>
@@ -107,14 +112,14 @@ export default defineComponent({
 
 
 				const savedItems = await connection.manager.find(Item);
+				setLog(log.value.concat(`Saved items from the db successful\n`));
+				console.log("$$$ Saved items from the db: ", savedItems);
 				setItems(savedItems);
-				const loadedUsers = await connection.manager.createQueryBuilder()
-					.select()
-					.from(User,'user')
-					.innerJoin(Item,'item','item.user = user.id')
+				const loadedUsers = await connection.createQueryBuilder(User,"user")
+					.innerJoinAndSelect("user.items","item")
 					.orderBy('user.lastName,item.name')
 					.getMany();
-				setLog(log.value.concat(`Saved user from the db:: ${loadedUsers}\n`));
+				setLog(log.value.concat(`Saved users from the db successful \n`));
 				console.log("$$$ Saved users from the db: ", loadedUsers);
 				setUsers(loadedUsers);
 
