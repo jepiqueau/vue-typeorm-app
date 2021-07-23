@@ -73,7 +73,7 @@ export default defineComponent({
 
 			try {
 
-				const connection = getConnection();
+				const connection = getConnection('userConnection');
 				// create a user
 				const user = new User();
 				user.firstName = "Arthur";

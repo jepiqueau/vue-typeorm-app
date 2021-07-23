@@ -23,12 +23,19 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
-import {createConnection} from 'typeorm';
+import {createConnections, createConnection, Connection} from 'typeorm';
 import {CapacitorSQLite, SQLiteConnection} from '@capacitor-community/sqlite';
 import {Item} from "@/entity/item";
 import {User} from "@/entity/user";
 import {AddItemTable1626863626662} from "@/migration/1626863626662-AddItemTable";
 import {AddUserTable1626944570684} from "@/migration/1626944570684-AddUserTable";
+import {Post} from "@/entity/post";
+import {Author} from "@/entity/author";
+import {AddPostTable1626863626672} from "@/migration/1626863626672-AddPostTable";
+import {AddAuthorTable1626944570694} from "@/migration/1626944570694-AddAuthorTable";
+import {Category} from "@/entity/category";
+import {AddCategoryTable1627029917418} from "@/migration/1627029917418-AddCategoryTable";
+
 const app = createApp(App)
 	.use(IonicVue)
 	.use(router);
@@ -36,26 +43,44 @@ const app = createApp(App)
 if (isPlatform('capacitor')) {
 	const sqliteConnection = new SQLiteConnection(CapacitorSQLite);
 
-	createConnection({
-		type: 'capacitor',
-		driver: sqliteConnection,
-		database: 'ionic-vue',
-		entities: [Item, User],
-		migrations: [AddItemTable1626863626662, AddUserTable1626944570684],
-		logging: ['error', 'query', 'schema'],
-		synchronize: false,
-		migrationsRun: false,
-	}).then(async connection => {
+	createConnections([
+		{
+			name:'userConnection',
+			type: 'capacitor',
+			driver: sqliteConnection,
+			database: 'ionic-vue-user',
+			entities: [User, Item],
+			migrations: [AddUserTable1626944570684, AddItemTable1626863626662],
+			logging: ['error', 'query', 'schema'],
+			synchronize: false,
+			migrationsRun: false,
+		},
+		{
+			name:'authorConnection',
+			type: 'capacitor',
+			driver: sqliteConnection,
+			database: 'ionic-vue-author',
+			entities: [Author, Post, Category],
+			migrations: [AddAuthorTable1626944570694, AddPostTable1626863626672, AddCategoryTable1627029917418],
+			logging: ['error', 'query', 'schema'],
+			synchronize: false,
+			migrationsRun: false,
+		}
+	])
+	.then(async connections => {
 		try {
 			// run all migrations
-			await connection.runMigrations();
+			for (const connection of connections) {
+				await connection.runMigrations();
+			}
+			router.isReady().then(() => {
+				app.mount("#app");
+			});
 		} catch (e) {
 			console.log(e.message);
 		}
-		router.isReady().then(() => {
-			app.mount("#app");
-		});
 	})
+
 } else {
 	router.isReady().then(() => {
 		app.mount("#app");

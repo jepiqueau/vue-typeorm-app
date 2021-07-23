@@ -9,13 +9,13 @@ export class AddItemTable1626863626662 implements MigrationInterface {
                 "name" varchar NOT NULL,
                 "phoneNumber" integer UNIQUE NOT NULL,
                 "userId" integer, CONSTRAINT "FK_Item_User" FOREIGN KEY ("userId") REFERENCES "user" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
-            )
+            );
         `);
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(`
-            DROP TABLE "item"
+            DROP TABLE "item";
         `);
 	}
 

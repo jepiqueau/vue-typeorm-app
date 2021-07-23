@@ -35,7 +35,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-  ],
+, "src/migration/1626944570694-AddAuthorTable.ts"  ],
   "exclude": [
     "node_modules"
   ]
