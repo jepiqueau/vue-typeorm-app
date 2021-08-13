@@ -79,14 +79,46 @@ export default defineComponent({
 				user.firstName = "Arthur";
 				user.lastName = "Ashe";
 				user.email = "arthur.ashe@example.com";
+				const userRepository = connection.getRepository(User);
+				let userToUpdate = await userRepository.findOne({email: user.email})
+				console.log(`$$$$ userToUpdate : ${JSON.stringify(userToUpdate)}`)
+				if( userToUpdate != null) {
+					user.id = userToUpdate.id;
+				}
+				await userRepository.save(user);
+
+				// create a second user was added later to test live-reload
+				const user1 = new User();
+				user1.firstName = "Dan";
+				user1.lastName = "Jeep";
+				user1.email = "dan.jeep@example.com";
+				userToUpdate = await userRepository.findOne({email: user1.email})
+				console.log(`$$$$ userToUpdate : ${JSON.stringify(userToUpdate)}`)
+				if( userToUpdate != null) {
+					user1.id = userToUpdate.id;
+				}
+				await userRepository.save(user1);
+
+
+/*		await connection.manager.find(User)
 				
-				await connection.manager
 						.save(user)
 						.then(user => {
 							setLog(log.value.concat(`User has been saved. User id: ${user.id}\n`));
 							console.log("User has been saved. User id is", user.id);
-						});
+						})
 
+						.catch(err => {
+							console.log(`Error User ${err.message}`);
+						});
+*/
+/*					.insert(user)
+					.into(Tokens)
+					.values(post2)
+					.onConflict(`("userId") DO UPDATE SET UUID = :uuid`)
+					.setParameter("title", values.uuid)
+					.execute();
+*/
 				// create items
 				const item1 = new Item();
 				item1.name = 'Iphone 12 Pro Max';
@@ -96,13 +128,44 @@ export default defineComponent({
 				item2.name = 'Galaxy S21';
 				item2.phoneNumber = 132456789;
 				item2.user = user;
+				const itemRepository = connection.getRepository(Item);
+				let itemToUpdate = await itemRepository.findOne({phoneNumber: item1.phoneNumber})
+				console.log(`$$$$ itemToUpdate : ${JSON.stringify(itemToUpdate)}`)
+				if( itemToUpdate != null) {
+					item1.id = itemToUpdate.id;
+				}
+				await itemRepository.save(item1);
 
+				itemToUpdate = await itemRepository.findOne({phoneNumber: item2.phoneNumber})
+				console.log(`$$$$ itemToUpdate : ${JSON.stringify(itemToUpdate)}`)
+				if( itemToUpdate != null) {
+					item2.id = itemToUpdate.id;
+				}
+				await itemRepository.save(item2);
+
+				// added later to test live-reload
+				const item3 = new Item();
+				item3.name = 'Note 3';
+				item3.phoneNumber = 732456189;
+				item3.user = user1;
+				itemToUpdate = await itemRepository.findOne({phoneNumber: item3.phoneNumber})
+				console.log(`$$$$ itemToUpdate : ${JSON.stringify(itemToUpdate)}`)
+				if( itemToUpdate != null) {
+					item3.id = itemToUpdate.id;
+				}
+				await itemRepository.save(item3);
+
+				/*
 				await connection.manager
 						.save(item1)
 						.then(item1 => {
 							setLog(log.value.concat(`Item1 has been saved. Item id: ${item1.id}\n`));
 							console.log("Item has been saved. Item id is", item1.id);
+						})
+						.catch(err => {
+							console.log(`Error Item ${err.message}`);
 						});
+
 				await connection.manager
 						.save(item2)
 						.then(item => {
@@ -110,7 +173,7 @@ export default defineComponent({
 							console.log("Item has been saved. Item id is", item.id);
 						});
 
-
+*/
 				const savedItems = await connection.manager.find(Item);
 				setLog(log.value.concat(`Saved items from the db successful\n`));
 				console.log("$$$ Saved items from the db: ", savedItems);

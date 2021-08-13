@@ -13,7 +13,7 @@ export class User {
   @Column()
   lastName!: string;
 
-  @Column()
+  @Column({unique: true})
   email!: string; 
 
   @OneToMany(type => Item, item => item.user)

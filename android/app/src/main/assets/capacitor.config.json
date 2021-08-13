@@ -2,5 +2,8 @@
 	"appId": "com.jeep.app.vue.typeorm.sqlite",
 	"appName": "vue-typeorm-app",
 	"webDir": "dist",
-	"bundledWebRuntime": false
+	"bundledWebRuntime": false,
+	"server": {
+		"url": "http://192.168.1.78:8100"
+	}
 }

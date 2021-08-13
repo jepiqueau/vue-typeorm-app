@@ -9,7 +9,7 @@ export class Item {
 	@Column()
 	name!: string;
 
-	@Column()
+	@Column({unique: true})
 	phoneNumber!: number;
 
 	@ManyToOne(type => User, user => user.items, {

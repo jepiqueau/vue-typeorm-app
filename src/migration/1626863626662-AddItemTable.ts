@@ -4,7 +4,7 @@ export class AddItemTable1626863626662 implements MigrationInterface {
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(`
-            CREATE TABLE "item" (
+            CREATE TABLE IF NOT EXISTS "item" (
                 "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
                 "name" varchar NOT NULL,
                 "phoneNumber" integer UNIQUE NOT NULL,
