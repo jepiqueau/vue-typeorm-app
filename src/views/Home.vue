@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar} from '@ionic/vue';
-import {defineComponent, onBeforeMount} from 'vue';
+import {defineComponent, onBeforeMount, getCurrentInstance } from 'vue';
 import {getConnection} from "typeorm";
 import {Item} from "@/entity/item";
 import {User} from "@/entity/user";
@@ -63,17 +63,22 @@ export default defineComponent({
 		IonToolbar,
 	},
 	setup() {
+		const app = getCurrentInstance();
 		const [log, setLog] = useState("");
 		const [items, setItems] = useState([]);
 		const [users, setUsers] = useState([]);
 		let errMess = "";
-		onBeforeMount(async () => {
+		if(app != null) {
+			const platform = app.appContext.config.globalProperties.$platform;
+			const sqlite= app.appContext.config.globalProperties.$sqlite;
+			onBeforeMount(async () => {
 			setLog(log.value
                     .concat("\n* Start testing *\n"));
 
 			try {
 
 				const connection = getConnection('userConnection');
+				const database = connection.options.database;
 				// create a user
 				const user = new User();
 				user.firstName = "Arthur";
@@ -174,6 +179,9 @@ export default defineComponent({
 						});
 
 */
+				if(platform === 'web') {
+					await sqlite.saveToStore(database);
+				}
 				const savedItems = await connection.manager.find(Item);
 				setLog(log.value.concat(`Saved items from the db successful\n`));
 				console.log("$$$ Saved items from the db: ", savedItems);
@@ -192,6 +200,9 @@ export default defineComponent({
 				errMess = `Error: ${e.message}`;
 			}
 		})
+		} else {
+			errMess = `Error: app is null or undefined`;
+		}
 		return {log, items, users, errMess};
 	},
 });
