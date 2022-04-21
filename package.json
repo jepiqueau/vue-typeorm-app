@@ -1,6 +1,6 @@
 {
   "name": "vue-typeorm-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@capacitor-community/electron": "^4.1.0",
-    "@capacitor-community/sqlite": "^3.4.2",
+    "@capacitor-community/sqlite": "^3.4.3-1",
     "@capacitor/android": "^3.4.3",
     "@capacitor/app": "1.1.1",
     "@capacitor/core": "^3.4.3",
@@ -24,7 +24,7 @@
     "@ionic/vue": "^6.0.0",
     "@ionic/vue-router": "^6.0.0",
     "core-js": "^3.6.5",
-    "jeep-sqlite": "^1.4.1",
+    "jeep-sqlite": "^1.4.2",
     "typeorm": "^0.3.6",
     "vue": "^3.2.21",
     "vue-router": "^4.0.12"
